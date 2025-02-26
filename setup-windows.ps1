@@ -28,7 +28,7 @@ Start-Service postgresql
 
 # --- Clone the GitHub repo ---
 # Replace <YOUR_GITHUB_REPO> with the actual repo URL
-$repoURL = "<YOUR_GITHUB_REPO>"
+$repoURL = "https://github.com/CodeWithInferno/notes.git"
 $projectDir = "uni-anotes"
 
 if (!(Test-Path $projectDir)) {
