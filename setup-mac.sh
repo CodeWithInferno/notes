@@ -19,7 +19,6 @@ brew install --cask visual-studio-code
 brew services start postgresql
 
 # --- Clone the GitHub repo ---
-# Make sure you replace <YOUR_GITHUB_REPO> with your actual repo URL
 REPO_URL="https://github.com/CodeWithInferno/notes.git"
 PROJECT_DIR="uni-anotes"
 if [ ! -d "$PROJECT_DIR" ]; then
