@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div>
-      This is prathams Commit.This is also Avish's commit.bfhvdfvhfd v
+      This is prathams Commit.This is also Avish's commit.bfhvdfvhfd vThis is robin commit
     </div>
   );
 }
