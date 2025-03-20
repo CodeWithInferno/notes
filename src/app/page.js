@@ -1,9 +1,27 @@
-import Image from "next/image";
+import Header from "@/components/Header";
+import React from "react";
+import {  Dialog,
+    DialogPortal,
+    DialogOverlay,
+    DialogTrigger,
+    DialogClose,
+    DialogContent,
+    DialogHeader,
+    DialogFooter,
+    DialogTitle,
+    DialogDescription} from "@/components/ui/dialog";
+import Header from "../components/Header"; // Adjust path based on structure
 
-export default function Home() {
-  return (
-    <div>
-      This is prathams Commit.This is also Avish's commit.bfhvdfvhfd vThis is robin commit
-    </div>
-  );
-}
+
+const Page = () => {
+    return (
+        <div>
+            <Header />
+            <Dialog>
+                This is Avish working on button.
+            </Dialog>
+        </div>
+    );
+};
+
+export default Page;
