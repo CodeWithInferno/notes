@@ -18,7 +18,7 @@ const Page = () => {
         <div>
             <Header />
             <Dialog>
-                This is Avish working on button.
+                This is Avish working on button. I am also going to add a menu bar.
             </Dialog>
         </div>
     );
