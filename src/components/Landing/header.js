@@ -2,6 +2,13 @@
 
 import React from "react";
 import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function Header() {
@@ -15,11 +22,33 @@ export default function Header() {
       <img src="/main_logo.svg" alt="Logo" className="h-12" />
       <div className="flex items-center space-x-4">
         {user ? (
-          <img
-            src={user.picture}
-            alt={user.name}
-            className="w-10 h-10 rounded-full"
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <img
+                src={user.picture}
+                alt={user.name}
+                className="w-10 h-10 rounded-full cursor-pointer"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48">
+              <DropdownMenuItem asChild>
+                <a href="/dashboard" className="w-full">
+                  Dashboard
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href="/settings" className="w-full">
+                  Settings
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <a href="/api/auth/logout" className="w-full text-red-600">
+                  Log out
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <Button variant="secondary" asChild>
             <a href="/api/auth/login">Sign In</a>

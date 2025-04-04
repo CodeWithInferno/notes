@@ -1,3 +1,4 @@
+'use client';
 import react from "react";
 import Header from "../components/Landing/header";
 
