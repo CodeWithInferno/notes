@@ -9,6 +9,8 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			maroon: '#5B0E07',
+        	gold: '#df9d29',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
