@@ -1,4 +1,5 @@
 'use client';
+import FilterBar from "@/components/Dashboard/filter-bar";
 import React, { useState } from "react";
 import Header from "@/components/Landing/header";
 import { Award } from 'lucide-react';
@@ -51,11 +52,30 @@ export default function Dashboard() {
     }]);
     setRaffleEntries(raffleEntries + 1);
   };
+  const [filters, setFilters] = useState({
+    semester: "",
+    professor: "",
+    fileType: "",
+  });
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  
   
   const handleDeleteNote = (id) => {
     setNotes(notes.filter(note => note.id !== id));
   };
-
+  
+  const filteredNotes = notes.filter(note => {
+    const matchSemester = filters.semester === "" || note.semester === filters.semester;
+    const matchProfessor = filters.professor === "" || note.professor === filters.professor;
+    const matchFileType = filters.fileType === "" || note.fileType === filters.fileType;
+  
+    const matchSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        note.subjectCode.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    return matchSemester && matchProfessor && matchFileType && matchSearch;
+  });
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -76,11 +96,18 @@ export default function Dashboard() {
           </TabsList>
           
           <TabsContent value="my-notes">
-            <NotesGrid 
-              notes={notes} 
-              onDeleteNote={handleDeleteNote} 
-            />
-          </TabsContent>
+  <FilterBar
+    filters={filters}
+    setFilters={setFilters}
+    searchQuery={searchQuery}
+    setSearchQuery={setSearchQuery}
+  />
+  <NotesGrid 
+    notes={filteredNotes} 
+    onDeleteNote={handleDeleteNote} 
+  />
+</TabsContent>
+
           
           <TabsContent value="upload">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
