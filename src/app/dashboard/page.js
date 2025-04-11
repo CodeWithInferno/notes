@@ -1,11 +1,11 @@
 'use client';
 import React, { useState } from "react";
-import Header from "@/components/Landing/header";
+import Header from "../../components/Landing/header";
 import { Award } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import NotesGrid from "@/components/Dashboard/notes-grid";
-import UploadSection from "@/components/Dashboard/upload-section";
-import RaffleCard from "@/components/Dashboard/raffle-card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import NotesGrid from "../../components/Dashboard/notes-grid";
+import UploadSection from "../../components/Dashboard/upload-section";
+import RaffleCard from "../../components/Dashboard/raffle-card";
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([

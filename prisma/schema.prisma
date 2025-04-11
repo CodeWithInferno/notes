@@ -12,8 +12,27 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+model Note {
+  id           String   @id @default(cuid())
+  title        String
+  subject      String
+  subjectCode  String
+  professor    String
+  semester     String
+  document     String   // The Supabase URL
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+  createdAt    DateTime @default(now())
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(STUDENT) // STUDENT or TUTOR
+  notes     Note[]   // relationship
+}
+enum Role {
+  STUDENT
+  TUTOR
 }
