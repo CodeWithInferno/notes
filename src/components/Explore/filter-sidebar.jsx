@@ -17,7 +17,7 @@ export default function FilterSidebar({ filterOptions, activeFilters, onFilterCh
         <h3 className="font-medium mb-3">{title}</h3>
         <div className="space-y-2">
           {options.map((option) => (
-            <div key={option} className="flex items-center">
+            <div key={`${filterType}-${option}`} className="flex items-center">
               <Checkbox
                 id={`${filterType}-${option}`}
                 checked={activeFilters[filterType].includes(option)}
@@ -33,8 +33,9 @@ export default function FilterSidebar({ filterOptions, activeFilters, onFilterCh
           ))}
         </div>
       </div>
-    )
-  }
+    );
+  };
+  
 
   return (
     <div className="w-full md:w-64 bg-white p-5 rounded-lg border border-gray-200 h-fit">

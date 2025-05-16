@@ -1,54 +1,72 @@
-// app/api/notes/upload/route.ts
-import { NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
-import prisma from "@/lib/prisma"
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getSession } from '@auth0/nextjs-auth0/edge'; // ✅ Correct edge import
+import { randomUUID } from 'crypto';
 
-export async function POST(req: NextRequest) {
-  try {
-    const formData = await req.formData()
-    const file = formData.get("file") as File
+export const dynamic = 'force-dynamic';
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
-    }
+export async function POST(req: Request) {
+  const session = await getSession(req);
+  const user = session?.user;
 
-    const title = formData.get("title")?.toString() || ""
-    const subject = formData.get("subject")?.toString() || ""
-    const subjectCode = formData.get("subjectCode")?.toString() || ""
-    const professor = formData.get("professor")?.toString() || ""
-    const semester = formData.get("semester")?.toString() || ""
-    const userId = formData.get("userId")?.toString() || ""
-
-    const ext = file.name.split(".").pop()
-    const filePath = `${userId}/${Date.now()}.${ext}`
-
-    const { error: uploadError } = await supabase.storage
-      .from("notes")
-      .upload(filePath, file, { upsert: false })
-
-    if (uploadError) {
-      console.error("Supabase upload error:", uploadError.message)
-      return NextResponse.json({ error: uploadError.message }, { status: 500 })
-    }
-
-    const { data: publicUrlData } = supabase.storage.from("notes").getPublicUrl(filePath)
-
-    const newNote = await prisma.note.create({
-      data: {
-        title,
-        subject,
-        subjectCode,
-        professor,
-        semester,
-        document: publicUrlData.publicUrl,
-        uploadedById: userId,
-      },
-    })
-
-    return NextResponse.json({ note: newNote }, { status: 200 })
-  } catch (err: any) {
-    console.error("Unexpected error in upload route:", err)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-}
 
+  const auth0UserId = user.sub;
+  const safeUserId = auth0UserId.replace('|', '_'); // ✅ sanitize for storage
+
+  const formData = await req.formData();
+  const title = formData.get('title') as string;
+  const subject = formData.get('subject') as string;
+  const subjectCode = formData.get('subjectCode') as string;
+  const professor = formData.get('professor') as string;
+  const semester = formData.get('semester') as string;
+  const file = formData.get('file') as File;
+
+  if (!file || !title || !subject || !subjectCode || !professor || !semester) {
+    return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+  }
+
+  const fileExt = file.name.split('.').pop();
+  const filePath = `${safeUserId}/${randomUUID()}.${fileExt}`;
+
+
+  const { error: uploadError } = await supabaseAdmin.storage
+    .from('notes')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type,
+    });
+
+  if (uploadError) {
+    console.error('[Upload Error]', uploadError);
+    return NextResponse.json({ error: 'File upload failed' }, { status: 500 });
+  }
+
+  const { data: publicData } = supabaseAdmin.storage.from('notes').getPublicUrl(filePath);
+
+  const { data, error } = await supabaseAdmin.from('notes').insert([
+    {
+      title,
+      subject,
+      subject_code: subjectCode,
+      professor,
+      semester,
+      
+      file_url: publicData.publicUrl,
+      file_path: filePath,
+      file_type: fileExt,
+      user_id: auth0UserId,
+      date: new Date().toISOString().split('T')[0],
+    },
+  ]).select().single();
+
+  if (error) {
+    console.error('[DB Insert Error]', error);
+    return NextResponse.json({ error: 'Database insert failed' }, { status: 500 });
+  }
+
+  return NextResponse.json({ note: data }, { status: 200 });
+}

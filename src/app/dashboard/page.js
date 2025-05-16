@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Landing/header";
 import { Award } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
@@ -51,6 +51,33 @@ export default function Dashboard() {
     }]);
     setRaffleEntries(raffleEntries + 1);
   };
+  useEffect(() => {
+    const initUser = async () => {
+      try {
+        const res = await fetch('/api/init-user')
+        const text = await res.text()
+  
+        try {
+          const json = JSON.parse(text)
+          if (!res.ok) {
+            console.error('User init failed:', json.error)
+          } else {
+            console.log('User exists or was added')
+          }
+        } catch (jsonErr) {
+          console.error('Invalid JSON response:', text)
+        }
+      } catch (err) {
+        console.error('Error calling init-user:', err)
+      }
+    }
+  
+    initUser()
+  }, [])
+  
+  
+  
+  
   
   const handleDeleteNote = (id) => {
     setNotes(notes.filter(note => note.id !== id));

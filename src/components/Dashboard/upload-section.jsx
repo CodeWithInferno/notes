@@ -47,7 +47,7 @@ export default function UploadSection({ onNoteUploaded }) {
     const data = await res.json()
     onNoteUploaded({
       ...data.note,
-      fileType: data.note.document.split(".").pop(),
+      fileType: data.note.file_type,
     })
 
     setIsUploading(false)

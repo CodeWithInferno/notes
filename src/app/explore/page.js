@@ -5,83 +5,14 @@ import Header from "@/components/Landing/header"
 import FilterSidebar from "@/components/Explore/filter-sidebar"
 import ResultsGrid from "@/components/Explore/results-grid"
 import SearchBar from "@/components/Explore/search-bar"
+import { useRouter } from "next/navigation"
+
+import Link from "next/link"; // don't forget if not imported!
+
 
 export default function Explore() {
-  const [allNotes, setAllNotes] = useState([
-    {
-      id: 1,
-      title: "Calculus Notes",
-      date: "2025-03-28",
-      subject: "Mathematics",
-      subjectCode: "MATH 101",
-      professor: "Dr. Smith",
-      semester: "Spring 2025",
-      fileType: "pdf",
-      downloads: 42,
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      title: "Physics Lab Report",
-      date: "2025-03-25",
-      subject: "Physics",
-      subjectCode: "PHYS 201",
-      professor: "Dr. Johnson",
-      semester: "Spring 2025",
-      fileType: "docx",
-      downloads: 28,
-      rating: 4.2,
-    },
-    {
-      id: 3,
-      title: "Chemistry Formulas",
-      date: "2025-03-20",
-      subject: "Chemistry",
-      subjectCode: "CHEM 110",
-      professor: "Dr. Williams",
-      semester: "Spring 2025",
-      fileType: "pdf",
-      downloads: 35,
-      rating: 4.7,
-    },
-    {
-      id: 4,
-      title: "Biology Cell Structure",
-      date: "2025-03-15",
-      subject: "Biology",
-      subjectCode: "BIO 150",
-      professor: "Dr. Brown",
-      semester: "Spring 2025",
-      fileType: "pdf",
-      downloads: 31,
-      rating: 4.3,
-    },
-    {
-      id: 5,
-      title: "Computer Science Algorithms",
-      date: "2025-03-10",
-      subject: "Computer Science",
-      subjectCode: "CS 202",
-      professor: "Dr. Davis",
-      semester: "Spring 2025",
-      fileType: "pdf",
-      downloads: 56,
-      rating: 4.8,
-    },
-    {
-      id: 6,
-      title: "Statistics Probability",
-      date: "2025-03-05",
-      subject: "Mathematics",
-      subjectCode: "MATH 205",
-      professor: "Dr. Miller",
-      semester: "Spring 2025",
-      fileType: "xlsx",
-      downloads: 24,
-      rating: 4.0,
-    },
-  ])
-
+  const [allNotes, setAllNotes] = useState([])
+  const [isApproved, setIsApproved] = useState(null)
   const [filteredNotes, setFilteredNotes] = useState([])
   const [activeFilters, setActiveFilters] = useState({
     subject: [],
@@ -91,58 +22,97 @@ export default function Explore() {
   })
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("date")
-
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const res = await fetch("/api/check-user-role")
+        const data = await res.json()
+  
+        if (!res.ok || data.is_approved !== true) {
+          router.replace("/dashboard")
+        } else {
+          setIsApproved(true)
+        }
+      } catch (err) {
+        console.error("Access check failed", err)
+        router.replace("/dashboard")
+      }
+    }
+  
+    checkAccess()
+  }, [])
+  
+  useEffect(() => {
+    if (isApproved !== true) return
+  
+    const fetchNotes = async () => {
+      try {
+        const res = await fetch('/api/notes/explore')
+        const data = await res.json()
+  
+        if (res.ok) {
+          setAllNotes(data.notes)
+        } else {
+          console.error('Failed to fetch notes:', data.error)
+        }
+      } catch (err) {
+        console.error('Fetch error:', err)
+      }
+    }
+  
+    fetchNotes()
+  }, [isApproved])
+  
+  
   // Apply filters and search
   useEffect(() => {
-    let results = [...allNotes]
-
-    // Apply search query
+    let results = [...allNotes];
+  
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
+      const query = searchQuery.toLowerCase();
       results = results.filter(
         (note) =>
           note.title.toLowerCase().includes(query) ||
           note.subject.toLowerCase().includes(query) ||
           note.subjectCode.toLowerCase().includes(query) ||
           note.professor.toLowerCase().includes(query),
-      )
+      );
     }
-
-    // Apply filters
+  
     if (activeFilters.subject.length > 0) {
-      results = results.filter((note) => activeFilters.subject.includes(note.subject))
+      results = results.filter((note) => activeFilters.subject.includes(note.subject));
     }
-
+  
     if (activeFilters.semester.length > 0) {
-      results = results.filter((note) => activeFilters.semester.includes(note.semester))
+      results = results.filter((note) => activeFilters.semester.includes(note.semester));
     }
-
+  
     if (activeFilters.fileType.length > 0) {
-      results = results.filter((note) => activeFilters.fileType.includes(note.fileType))
+      results = results.filter((note) => activeFilters.fileType.includes(note.fileType));
     }
-
+  
     if (activeFilters.professor.length > 0) {
-      results = results.filter((note) => activeFilters.professor.includes(note.professor))
+      results = results.filter((note) => activeFilters.professor.includes(note.professor));
     }
-
-    // Apply sorting
+  
     results.sort((a, b) => {
       switch (sortBy) {
-        case "date":
-          return new Date(b.date) - new Date(a.date)
-        case "title":
-          return a.title.localeCompare(b.title)
-        case "downloads":
-          return b.downloads - a.downloads
-        case "rating":
-          return b.rating - a.rating
+        case 'date':
+          return new Date(b.date) - new Date(a.date);
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'downloads':
+          return b.downloads - a.downloads;
+        case 'rating':
+          return b.rating - a.rating;
         default:
-          return 0
+          return 0;
       }
-    })
-
-    setFilteredNotes(results)
-  }, [allNotes, activeFilters, searchQuery, sortBy])
+    });
+  
+    setFilteredNotes(results);
+  }, [allNotes, activeFilters, searchQuery, sortBy]);
+  
 
   // Get unique values for filters
   const getFilterOptions = () => {
