@@ -6,87 +6,72 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import NotesGrid from "../../components/Dashboard/notes-grid";
 import UploadSection from "../../components/Dashboard/upload-section";
 import RaffleCard from "../../components/Dashboard/raffle-card";
+import NoteViewer from "../../components/Dashboard/note-viewer";
 
 export default function Dashboard() {
-  const [notes, setNotes] = useState([
-    { 
-      id: 1, 
-      title: "Calculus Notes", 
-      date: "2025-03-28", 
-      subject: "Mathematics", 
-      subjectCode: "MATH 101",
-      professor: "Dr. Smith",
-      semester: "Spring 2025",
-      fileType: "pdf" 
-    },
-    { 
-      id: 2, 
-      title: "Physics Lab Report", 
-      date: "2025-03-25", 
-      subject: "Physics", 
-      subjectCode: "PHYS 201",
-      professor: "Dr. Johnson",
-      semester: "Spring 2025",
-      fileType: "docx" 
-    },
-    { 
-      id: 3, 
-      title: "Chemistry Formulas", 
-      date: "2025-03-20", 
-      subject: "Chemistry", 
-      subjectCode: "CHEM 110",
-      professor: "Dr. Williams",
-      semester: "Spring 2025",
-      fileType: "pdf" 
-    },
-  ]);
-  
+  const [notes, setNotes] = useState([]);
+  const [viewingFile, setViewingFile] = useState(null);
   const [raffleEntries, setRaffleEntries] = useState(3);
-  
+
   const handleAddNote = (newNote) => {
-    setNotes([...notes, {
-      id: notes.length + 1,
+    const noteToAdd = {
       date: new Date().toISOString().split('T')[0],
-      ...newNote
-    }]);
+      ...newNote,
+    };
+    setNotes([...notes, noteToAdd]);
     setRaffleEntries(raffleEntries + 1);
   };
-  useEffect(() => {
-    const initUser = async () => {
-      try {
-        const res = await fetch('/api/init-user')
-        const text = await res.text()
-  
-        try {
-          const json = JSON.parse(text)
-          if (!res.ok) {
-            console.error('User init failed:', json.error)
-          } else {
-            console.log('User exists or was added')
-          }
-        } catch (jsonErr) {
-          console.error('Invalid JSON response:', text)
-        }
-      } catch (err) {
-        console.error('Error calling init-user:', err)
-      }
-    }
-  
-    initUser()
-  }, [])
-  
-  
-  
-  
-  
+
   const handleDeleteNote = (id) => {
     setNotes(notes.filter(note => note.id !== id));
   };
 
+  useEffect(() => {
+    const initUser = async () => {
+      try {
+        const res = await fetch('/api/init-user');
+        const text = await res.text();
+
+        try {
+          const json = JSON.parse(text);
+          if (!res.ok) {
+            console.error('User init failed:', json.error);
+          } else {
+            console.log('User exists or was added');
+          }
+        } catch (jsonErr) {
+          console.error('Invalid JSON response:', text);
+        }
+      } catch (err) {
+        console.error('Error calling init-user:', err);
+      }
+    };
+
+    initUser();
+  }, []);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const res = await fetch('/api/notes/mine');
+        const data = await res.json();
+        if (res.ok) {
+          setNotes(data.notes);
+        } else {
+          console.error("Failed to fetch notes:", data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching user notes:", err);
+      }
+    };
+
+    fetchNotes();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Your Study Notes Dashboard</h1>
@@ -95,25 +80,26 @@ export default function Dashboard() {
             <span className="font-medium">Raffle Entries: {raffleEntries}</span>
           </div>
         </div>
-        
+
         <Tabs defaultValue="my-notes" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="my-notes">My Notes</TabsTrigger>
             <TabsTrigger value="upload">Upload Notes</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="my-notes">
             <NotesGrid 
-              notes={notes} 
-              onDeleteNote={handleDeleteNote} 
+              notes={notes}
+              onDeleteNote={handleDeleteNote}
+              onViewNote={(filePath) => setViewingFile(filePath)}
             />
           </TabsContent>
-          
+
           <TabsContent value="upload">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <UploadSection onNoteUploaded={handleAddNote} />
               <RaffleCard entries={raffleEntries} />
-              
+
               {/* STEM Tutoring Resources Card */}
               <div className="bg-green-50 border border-green-100 rounded-lg p-6">
                 <div className="flex items-center gap-3">
@@ -142,6 +128,13 @@ export default function Dashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {viewingFile && (
+        <NoteViewer
+          filePath={viewingFile}
+          onClose={() => setViewingFile(null)}
+        />
+      )}
     </div>
   );
 }

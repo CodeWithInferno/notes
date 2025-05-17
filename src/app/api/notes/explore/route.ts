@@ -12,16 +12,16 @@ export async function GET(req: Request) {
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
   const { data: roleEntry, error: roleError } = await supabaseAdmin
   .from("user_roles")
-  .select("role")
+  .select("role, is_approved")
   .eq("email", user.email)
   .single()
 
-if (!roleEntry || !['admin', 'superadmin'].includes(roleEntry.role)) {
+if (!roleEntry || !roleEntry.is_approved || !['admin', 'superadmin'].includes(roleEntry.role)) {
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 }
+
 
 
   const { data, error } = await supabaseAdmin
