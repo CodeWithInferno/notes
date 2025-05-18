@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useUser } from '@auth0/nextjs-auth0/client';
+
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { user, error, isLoading } = useUser()
   const pathname = usePathname()
 
   // Handle scroll effect for navbar
@@ -120,12 +123,25 @@ export function Navbar() {
           </ul>
         </nav>
 
-        <Link
-          href="/get-started"
-          className="hidden md:block border border-gray-300 text-gray-300 px-5 py-2 rounded-full hover:bg-[#f7d354] hover:text-black transition-colors"
-        >
-          Create Account
-        </Link>
+        {user ? (
+  <Link href="/dashboard" className="hidden md:flex items-center gap-2 text-gray-300 hover:text-white">
+    {user.picture ? (
+      <img src={user.picture} alt="User avatar" className="w-8 h-8 rounded-full" />
+    ) : (
+      <div className="w-8 h-8 rounded-full bg-gray-300 text-black flex items-center justify-center font-bold">
+        {user.name?.[0]?.toUpperCase() || "U"}
+      </div>
+    )}
+  </Link>
+) : (
+  <Link
+    href="/api/auth/login"
+    className="hidden md:block border border-gray-300 text-gray-300 px-5 py-2 rounded-full hover:bg-[#f7d354] hover:text-black transition-colors"
+  >
+    Login
+  </Link>
+)}
+
 
         {/* Mobile Menu - Improved with animation and positioning */}
         <div
@@ -192,14 +208,25 @@ export function Navbar() {
                 </Link>
               </li>
               <li className="mt-6">
-                <Link
-                  href="/get-started"
-                  className="block w-full text-center border border-gray-300 text-gray-300 px-5 py-2 rounded-full hover:bg-[#f7d354] hover:text-black transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Create Account
-                </Link>
-              </li>
+  {user ? (
+    <Link
+      href="/dashboard"
+      className="block w-full text-center border border-gray-300 text-gray-300 px-5 py-2 rounded-full hover:bg-[#f7d354] hover:text-black transition-colors"
+      onClick={() => setIsMenuOpen(false)}
+    >
+      Profile
+    </Link>
+  ) : (
+    <Link
+      href="/api/auth/login"
+      className="block w-full text-center border border-gray-300 text-gray-300 px-5 py-2 rounded-full hover:bg-[#f7d354] hover:text-black transition-colors"
+      onClick={() => setIsMenuOpen(false)}
+    >
+      Login
+    </Link>
+  )}
+</li>
+
             </ul>
           </div>
         </div>
@@ -212,3 +239,9 @@ export function Navbar() {
     </header>
   )
 }
+
+
+
+
+
+

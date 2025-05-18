@@ -1,20 +1,20 @@
-"use client"
-import { FileText, Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+"use client";
+import { FileText, Eye, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
-export default function NotesGrid({ notes, onDeleteNote }) {
+export default function NotesGrid({ notes, onDeleteNote, onViewNote }) {
   const getFileIcon = (fileType) => {
     switch (fileType) {
       case "pdf":
-        return <FileText className="text-red-500" />
+        return <FileText className="text-red-500" />;
       case "docx":
       case "doc":
-        return <FileText className="text-blue-500" />
+        return <FileText className="text-blue-500" />;
       default:
-        return <FileText />
+        return <FileText />;
     }
-  }
+  };
 
   if (notes.length === 0) {
     return (
@@ -23,7 +23,7 @@ export default function NotesGrid({ notes, onDeleteNote }) {
         <h3 className="mt-4 text-lg font-medium">No notes yet</h3>
         <p className="text-gray-500">Upload your first note to get started</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -52,17 +52,20 @@ export default function NotesGrid({ notes, onDeleteNote }) {
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
+
           <div className="mt-4 flex gap-2">
-            <Button variant="outline" size="sm" className="w-full">
-              View
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => onViewNote?.(note.file_path)} // call only if passed
+            >
+              <Eye className="w-4 h-4 mr-1" /> View
             </Button>
-            <Button variant="outline" size="sm" className="w-full">
-              Download
-            </Button>
+            {/* You can add a download button back later if needed */}
           </div>
         </Card>
       ))}
     </div>
-  )
+  );
 }
-
