@@ -1,9 +1,9 @@
 "use client"
 import { useEffect } from "react"
-import Header from "../components/Landing/header"
+import Header from "../components/Header"
 import { GallerySection } from "../components/gallery-section"
 import { FeaturesSection } from "../components/features-section"
-import { TestimonialsSection } from "../components/testimonials-section"
+
 import { ContactSection } from "../components/contact-section"
 import { Navbar } from "../components/navbar"
 import { Footer } from "../components/footer"
@@ -84,7 +84,7 @@ export default function Page() {
       <GallerySection />
 
       {/* Testimonials Section */}
-      <TestimonialsSection />
+
 
       {/* Contact Section */}
       <ContactSection />

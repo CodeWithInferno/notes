@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Header from "@/components/Landing/header";
+import Header from "@/components/Header";
 import FilterSidebar from "@/components/Explore/filter-sidebar";
 import ResultsGrid from "@/components/Explore/results-grid";
 import SearchBar from "@/components/Explore/search-bar";
