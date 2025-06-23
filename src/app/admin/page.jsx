@@ -3,10 +3,32 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import RaffleManager from "@/components/raffleui" // adjust path if needed
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Search, UserPlus, Trash2, Mail, Check, X } from "lucide-react"
+import {
+  Search,
+  UserPlus,
+  Trash2,
+  Mail,
+  Check,
+  X,
+} from "lucide-react"
 
 export default function AdminDashboard() {
   const [email, setEmail] = useState("")
@@ -68,24 +90,30 @@ export default function AdminDashboard() {
     }
   }
 
-  const handleDeleteUser = (id: number) => {
+  const handleDeleteUser = (id) => {
     setUsers(users.filter((user) => user.id !== id))
   }
 
-  const filteredUsers = users.filter((user) => user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredUsers = users.filter((user) =>
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex flex-col gap-8">
         <div>
           <h1 className="text-3xl font-bold">STEM Center Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-2">Manage user access to the notes platform</p>
+          <p className="text-muted-foreground mt-2">
+            Manage user access to the notes platform
+          </p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Add New User</CardTitle>
-            <CardDescription>Grant access to a new user by adding their email address</CardDescription>
+            <CardDescription>
+              Grant access to a new user by adding their email address
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex gap-4 flex-col sm:flex-row">
@@ -98,7 +126,10 @@ export default function AdminDashboard() {
                   className="pl-10"
                 />
               </div>
-              <Button onClick={handleAddUser} className="flex items-center gap-2">
+              <Button
+                onClick={handleAddUser}
+                className="flex items-center gap-2"
+              >
                 <UserPlus className="h-4 w-4" />
                 <span>Add User</span>
               </Button>
@@ -109,7 +140,9 @@ export default function AdminDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Manage Users</CardTitle>
-            <CardDescription>View and manage user access to the platform</CardDescription>
+            <CardDescription>
+              View and manage user access to the platform
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="relative mb-6">
@@ -155,7 +188,11 @@ export default function AdminDashboard() {
                         </TableCell>
                         <TableCell>{user.dateAdded}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => handleDeleteUser(user.id)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteUser(user.id)}
+                          >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         </TableCell>
@@ -173,6 +210,8 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
+        <RaffleManager />
+
       </div>
     </div>
   )

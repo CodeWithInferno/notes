@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Gem, PenToolIcon as Tools, Smile, Lock, ChevronRight } from "lucide-react"
 
 export function FeaturesSection() {
-  const [activeFeature, setActiveFeature] = useState<number | null>(null)
+  const [activeFeature, setActiveFeature] = useState(null)
 
   const features = [
     {
@@ -60,20 +60,19 @@ export function FeaturesSection() {
               onMouseLeave={() => setActiveFeature(null)}
             >
               <div className="p-6">
-                {/* Icon with pulsing effect on hover */}
                 <div className="flex justify-center items-center mb-6 transition-all duration-300">
                   <div
-                    className={`p-4 rounded-full bg-[rgba(255,255,255,0.1)] ${activeFeature === index ? "animate-pulse" : ""}`}
+                    className={`p-4 rounded-full bg-[rgba(255,255,255,0.1)] ${
+                      activeFeature === index ? "animate-pulse" : ""
+                    }`}
                   >
                     {feature.icon}
                   </div>
                 </div>
 
-                {/* Title and description */}
                 <h3 className="text-2xl font-bold mb-3 text-center text-[#f7d354]">{feature.title}</h3>
                 <p className="text-gray-200 text-center mb-4">{feature.description}</p>
 
-                {/* Stats display */}
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   {Object.entries(feature.stats).map(([key, value], i) => (
                     <div key={i} className="bg-black/20 p-2 rounded text-center">
@@ -83,14 +82,14 @@ export function FeaturesSection() {
                   ))}
                 </div>
 
-                {/* Expandable details */}
                 <div
-                  className={`overflow-hidden transition-all duration-300 ${activeFeature === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"}`}
+                  className={`overflow-hidden transition-all duration-300 ${
+                    activeFeature === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                  }`}
                 >
                   <p className="text-sm text-gray-300 mb-4">{feature.details}</p>
                 </div>
 
-                {/* Learn more button */}
                 <div className="text-center mt-4">
                   <button className="inline-flex items-center text-[#f7d354] hover:text-white transition-colors">
                     Learn more <ChevronRight className="w-4 h-4 ml-1" />

@@ -1,10 +1,10 @@
+import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { getSession } from '@auth0/nextjs-auth0/edge'
-import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: Request) {
+export async function GET(req) {
   const session = await getSession(req)
   const user = session?.user
 
@@ -13,13 +13,13 @@ export async function GET(req: Request) {
   }
 
   const { data, error } = await supabaseAdmin
-    .from('notes')
-    .select('*')
-    .eq('user_id', user.sub) // match by Auth0 ID
+    .from('user_roles')
+    .select('email, is_approved, date_assigned')
+    .order('date_assigned', { ascending: false })
 
   if (error) {
-    return NextResponse.json({ error: 'Failed to fetch notes' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
   }
 
-  return NextResponse.json({ notes: data })
+  return NextResponse.json({ users: data })
 }

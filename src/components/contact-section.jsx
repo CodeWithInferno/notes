@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Phone, Mail, MapPin, Clock } from "lucide-react"
 import Image from "next/image"
@@ -15,14 +13,13 @@ export function ContactSection() {
     message: "",
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission logic here
     console.log("Form submitted:", formData)
     alert("Message sent successfully!")
     setFormData({

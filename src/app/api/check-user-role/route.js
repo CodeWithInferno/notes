@@ -4,14 +4,12 @@ import { getSession } from '@auth0/nextjs-auth0/edge'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: Request) {
-  // ❌ Remove: await cookies();
-
-  const session = await getSession(req);
-  const user = session?.user;
+export async function GET(req) {
+  const session = await getSession(req)
+  const user = session?.user
 
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const { data, error } = await supabaseAdmin
@@ -21,8 +19,8 @@ export async function GET(req: Request) {
     .single()
 
   if (error) {
-    return NextResponse.json({ error: 'Failed to fetch user role' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch user role' }, { status: 500 })
   }
 
-  return NextResponse.json({ ...data });
+  return NextResponse.json({ ...data })
 }
