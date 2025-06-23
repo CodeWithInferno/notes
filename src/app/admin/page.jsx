@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import RaffleManager from "@/components/raffleui" // adjust path if needed
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import RaffleManager from "@/components/raffleui"; // adjust path if needed
 
 import {
   Table,
@@ -12,68 +12,61 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import {
-  Search,
-  UserPlus,
-  Trash2,
-  Mail,
-  Check,
-  X,
-} from "lucide-react"
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Search, UserPlus, Trash2, Mail, Check, X } from "lucide-react";
 
 export default function AdminDashboard() {
-  const [email, setEmail] = useState("")
-  const [users, setUsers] = useState([])
-  const [searchQuery, setSearchQuery] = useState("")
+  const [email, setEmail] = useState("");
+  const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // 🚀 Load users from Supabase on mount
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/get-approved-users")
-        const result = await res.json()
+        const res = await fetch("/api/get-approved-users");
+        const result = await res.json();
         if (res.ok) {
           const formatted = result.users.map((u, i) => ({
             id: i + 1,
             email: u.email,
             status: u.is_approved ? "active" : "pending",
             dateAdded: u.date_assigned || "Unknown",
-          }))
-          setUsers(formatted)
+          }));
+          setUsers(formatted);
         } else {
-          console.error("Failed to load users:", result.error)
+          console.error("Failed to load users:", result.error);
         }
       } catch (err) {
-        console.error("Fetch error:", err)
+        console.error("Fetch error:", err);
       }
-    }
+    };
 
-    fetchUsers()
-  }, [])
+    fetchUsers();
+  }, []);
 
   const handleAddUser = async () => {
-    if (!email || !email.includes("@")) return
+    if (!email || !email.includes("@")) return;
 
     try {
       const res = await fetch("/api/promote-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
-      })
+      });
 
-      const result = await res.json()
+      const result = await res.json();
       if (!res.ok) {
-        console.error("Error promoting user:", result.error)
-        return
+        console.error("Error promoting user:", result.error);
+        return;
       }
 
       const newUser = {
@@ -81,22 +74,22 @@ export default function AdminDashboard() {
         email: email,
         status: "active",
         dateAdded: new Date().toISOString().split("T")[0],
-      }
+      };
 
-      setUsers([...users, newUser])
-      setEmail("")
+      setUsers([...users, newUser]);
+      setEmail("");
     } catch (err) {
-      console.error("Request failed:", err)
+      console.error("Request failed:", err);
     }
-  }
+  };
 
   const handleDeleteUser = (id) => {
-    setUsers(users.filter((user) => user.id !== id))
-  }
+    setUsers(users.filter((user) => user.id !== id));
+  };
 
   const filteredUsers = users.filter((user) =>
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -169,7 +162,9 @@ export default function AdminDashboard() {
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
                       <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.email}</TableCell>
+                        <TableCell className="font-medium">
+                          {user.email}
+                        </TableCell>
                         <TableCell>
                           <Badge
                             variant={
@@ -180,9 +175,15 @@ export default function AdminDashboard() {
                                 : "secondary"
                             }
                           >
-                            {user.status === "active" && <Check className="h-3 w-3 mr-1" />}
-                            {user.status === "pending" && <Mail className="h-3 w-3 mr-1" />}
-                            {user.status === "inactive" && <X className="h-3 w-3 mr-1" />}
+                            {user.status === "active" && (
+                              <Check className="h-3 w-3 mr-1" />
+                            )}
+                            {user.status === "pending" && (
+                              <Mail className="h-3 w-3 mr-1" />
+                            )}
+                            {user.status === "inactive" && (
+                              <X className="h-3 w-3 mr-1" />
+                            )}
                             {user.status}
                           </Badge>
                         </TableCell>
@@ -200,7 +201,10 @@ export default function AdminDashboard() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center py-6 text-muted-foreground">
+                      <TableCell
+                        colSpan={4}
+                        className="text-center py-6 text-muted-foreground"
+                      >
                         No users found
                       </TableCell>
                     </TableRow>
@@ -211,8 +215,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
         <RaffleManager />
-
       </div>
     </div>
-  )
+  );
 }

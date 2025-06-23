@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from "react";
-import Header from "../../components/Landing/header";
+import Header from "../../components/Header";
 import { Award } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import NotesGrid from "../../components/Dashboard/notes-grid";
