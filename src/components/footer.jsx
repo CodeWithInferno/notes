@@ -39,62 +39,22 @@ export function Footer() {
         <div className="col-span-1">
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2">
-            <li>
-              <Link href="/#home" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/#features" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Features
-              </Link>
-            </li>
-            <li>
-              <Link href="/#gallery" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Gallery
-              </Link>
-            </li>
-            <li>
-              <Link href="/#testimonials" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Testimonials
-              </Link>
-            </li>
-            <li>
-              <Link href="/#contact" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Contact
-              </Link>
-            </li>
+            <li><Link href="/#home" className="text-gray-300 hover:text-[#f7d354] transition-colors">Home</Link></li>
+            <li><Link href="/#features" className="text-gray-300 hover:text-[#f7d354] transition-colors">Features</Link></li>
+            <li><Link href="/#gallery" className="text-gray-300 hover:text-[#f7d354] transition-colors">Gallery</Link></li>
+            <li><Link href="/#testimonials" className="text-gray-300 hover:text-[#f7d354] transition-colors">Testimonials</Link></li>
+            <li><Link href="/#contact" className="text-gray-300 hover:text-[#f7d354] transition-colors">Contact</Link></li>
           </ul>
         </div>
 
         <div className="col-span-1">
           <h3 className="text-lg font-semibold mb-4">Resources</h3>
           <ul className="space-y-2">
-            <li>
-              <a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Study Guides
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Note Templates
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Academic Calendar
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                FAQ
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">
-                Support
-              </a>
-            </li>
+            <li><a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">Study Guides</a></li>
+            <li><a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">Note Templates</a></li>
+            <li><a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">Academic Calendar</a></li>
+            <li><a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">FAQ</a></li>
+            <li><a href="#" className="text-gray-300 hover:text-[#f7d354] transition-colors">Support</a></li>
           </ul>
         </div>
 

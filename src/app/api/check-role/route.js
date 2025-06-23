@@ -1,8 +1,7 @@
 import { getSession } from '@auth0/nextjs-auth0'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import { NextApiRequest, NextApiResponse } from 'next'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req, res) {
   const session = await getSession(req, res)
   const user = session?.user
 
