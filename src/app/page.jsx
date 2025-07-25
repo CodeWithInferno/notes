@@ -3,10 +3,10 @@ import { useEffect } from "react"
 import Header from "../components/Header"
 import { GallerySection } from "../components/gallery-section"
 import { FeaturesSection } from "../components/features-section"
-
 import { ContactSection } from "../components/contact-section"
 import { Navbar } from "../components/navbar"
 import { Footer } from "../components/footer"
+import { RecentNotesSection } from "../components/recent-notes-section"
 
 export default function Page() {
   // Add scroll reveal effect
@@ -79,6 +79,9 @@ export default function Page() {
 
       {/* Feature Section */}
       <FeaturesSection />
+
+      {/* Recent Notes Section */}
+      <RecentNotesSection />
 
       {/* Gallery Section */}
       <GallerySection />

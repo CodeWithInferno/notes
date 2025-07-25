@@ -1,72 +1,75 @@
-'use client';
-import React, { useState, useEffect } from "react";
-import Header from "../../components/Header";
-import { Award } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
-import NotesGrid from "../../components/Dashboard/notes-grid";
-import UploadSection from "../../components/Dashboard/upload-section";
-import RaffleCard from "../../components/Dashboard/raffle-card";
-import NoteViewer from "../../components/Dashboard/note-viewer";
+'use client'
+
+
+
+import React, { useState, useEffect, useCallback } from "react"
+import Header from "../../components/Header"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+import NotesGrid from "../../components/Dashboard/notes-grid"
+import UploadSection from "../../components/Dashboard/upload-section"
+import EditNoteModal from "../../components/Dashboard/EditNoteModal"
+import RaffleHighlightCard from "../../components/Dashboard/RaffleHighlightCard"
+import Link from "next/link"
+import { Award } from "lucide-react"
 
 export default function Dashboard() {
-  const [notes, setNotes] = useState([]);
-  const [viewingFile, setViewingFile] = useState(null);
-  const [raffleEntries, setRaffleEntries] = useState(3);
+  const [notes, setNotes] = useState([])
+  const [user, setUser] = useState(null)
+  const [editingNote, setEditingNote] = useState(null)
+  const [academics, setAcademics] = useState({ courses: [], semesters: [] })
 
-  const handleAddNote = (newNote) => {
-    const noteToAdd = {
-      date: new Date().toISOString().split('T')[0],
-      ...newNote,
-    };
-    setNotes([...notes, noteToAdd]);
-    setRaffleEntries(raffleEntries + 1);
-  };
+  const fetchAcademics = useCallback(async () => {
+    const res = await fetch("/api/academics")
+    if (res.ok) {
+      setAcademics(await res.json())
+    }
+  }, [])
 
-  const handleDeleteNote = (id) => {
-    setNotes(notes.filter(note => note.id !== id));
-  };
-
-  useEffect(() => {
-    const initUser = async () => {
-      try {
-        const res = await fetch('/api/init-user');
-        const text = await res.text();
-
-        try {
-          const json = JSON.parse(text);
-          if (!res.ok) {
-            console.error('User init failed:', json.error);
-          } else {
-            console.log('User exists or was added');
-          }
-        } catch (jsonErr) {
-          console.error('Invalid JSON response:', text);
+  const fetchNotes = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notes/mine")
+      if (res.ok) {
+        const data = await res.json()
+        setNotes(data.notes || [])
+      } else {
+        const errorData = await res.json()
+        if (errorData.error !== 'User not found') {
+          console.error("Failed to fetch notes:", errorData)
         }
-      } catch (err) {
-        console.error('Error calling init-user:', err);
       }
-    };
-
-    initUser();
-  }, []);
+    } catch (err) {
+      console.error("Error fetching user notes:", err)
+    }
+  }, [])
 
   useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        const res = await fetch('/api/notes/mine');
-        const data = await res.json();
+    const initializeUserAndFetchData = async () => {
+      const userRes = await fetch('/api/init-user');
+      if (userRes.ok) {
+        const { user } = await userRes.json();
+        setUser(user);
+      }
+      await fetchNotes();
+      await fetchAcademics();
+    }
+    initializeUserAndFetchData()
+  }, [fetchNotes, fetchAcademics])
+
+  const handleNoteUploaded = useCallback(() => {
+    fetchNotes()
+    setUser(prev => prev ? { ...prev, kudosPoints: prev.kudosPoints + 10 } : null)
+  }, [fetchNotes])
+
+  const handleDeleteNote = async (noteId) => {
+    if (confirm("Are you sure you want to delete this note? This action cannot be undone.")) {
+        const res = await fetch(`/api/notes/${noteId}`, { method: 'DELETE' });
         if (res.ok) {
-          setNotes(data.notes);
+            fetchNotes();
         } else {
-          console.error("Failed to fetch notes:", data.error);
+            alert("Failed to delete the note.");
         }
-      } catch (err) {
-        console.error("Error fetching user notes:", err);
-      }
-    };
-
-    fetchNotes();
-  }, []);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -75,10 +78,14 @@ export default function Dashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Your Study Notes Dashboard</h1>
-          <div className="flex items-center gap-2 mt-4 md:mt-0">
-            <Award className="text-yellow-500" />
-            <span className="font-medium">Raffle Entries: {raffleEntries}</span>
-          </div>
+          {user && (
+            <div className="flex items-center gap-2 mt-4 md:mt-0">
+                <Award className="text-yellow-500" />
+                <span className="font-medium">
+                    {user.kudosPoints} Kudos Points
+                </span>
+            </div>
+          )}
         </div>
 
         <Tabs defaultValue="my-notes" className="w-full">
@@ -88,19 +95,18 @@ export default function Dashboard() {
           </TabsList>
 
           <TabsContent value="my-notes">
-            <NotesGrid 
+            <NotesGrid
               notes={notes}
-              onDeleteNote={handleDeleteNote}
-              onViewNote={(filePath) => setViewingFile(filePath)}
+              currentUserId={user?.id}
+              onEdit={setEditingNote}
+              onDelete={handleDeleteNote}
             />
           </TabsContent>
 
           <TabsContent value="upload">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <UploadSection onNoteUploaded={handleAddNote} />
-              <RaffleCard entries={raffleEntries} />
-
-              {/* STEM Tutoring Resources Card */}
+              <UploadSection onNoteUploaded={handleNoteUploaded} />
+              <RaffleHighlightCard />
               <div className="bg-green-50 border border-green-100 rounded-lg p-6">
                 <div className="flex items-center gap-3">
                   <div className="bg-green-100 p-2 rounded-full">
@@ -120,21 +126,27 @@ export default function Dashboard() {
                 <div className="mt-4">
                   <p className="text-sm text-gray-600">Browse resources from tutors and other students</p>
                 </div>
-                <button className="w-full mt-4 py-2 border border-green-200 rounded-md text-green-700 hover:bg-green-100 transition-colors">
-                  Browse Resources
-                </button>
+                <Link href="/explore" passHref>
+                  <button className="w-full mt-4 py-2 border border-green-200 rounded-md text-green-700 hover:bg-green-100 transition-colors">
+                    Browse Resources
+                  </button>
+                </Link>
               </div>
             </div>
           </TabsContent>
         </Tabs>
       </main>
 
-      {viewingFile && (
-        <NoteViewer
-          filePath={viewingFile}
-          onClose={() => setViewingFile(null)}
+      {editingNote && (
+        <EditNoteModal
+            note={editingNote}
+            academics={academics}
+            isOpen={!!editingNote}
+            onClose={() => setEditingNote(null)}
+            onNoteUpdated={fetchNotes}
         />
       )}
     </div>
-  );
+  )
 }
+

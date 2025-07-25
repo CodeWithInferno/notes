@@ -1,40 +1,69 @@
-'use client';
-import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+'use client'
+import { useEffect } from "react"
+import { X, Download, FileWarning } from "lucide-react"
 
-export default function NoteViewer({ filePath, onClose }) {
-  const [fileUrl, setFileUrl] = useState("");
-
+export default function NoteViewer({ filePath: fileUrl, onClose }) {
+  // Prevent background scrolling when the viewer is open
   useEffect(() => {
-    if (filePath) {
-      const publicBase = "https://ocgiyhicvoovieaunvar.supabase.co/storage/v1/object/public/notes/";
-      setFileUrl(publicBase + filePath);
-    }
-  }, [filePath]);
-
-  useEffect(() => {
-    const disableRightClick = (e) => e.preventDefault();
-    document.addEventListener("contextmenu", disableRightClick);
+    document.body.style.overflow = "hidden"
     return () => {
-      document.removeEventListener("contextmenu", disableRightClick);
-    };
-  }, []);
+      document.body.style.overflow = "auto"
+    }
+  }, [])
 
   if (!fileUrl) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="text-center text-white animate-pulse text-lg font-medium">
-          Loading document...
+    return null
+  }
+
+  const fileExtension = fileUrl.split(".").pop().toLowerCase()
+
+  const renderContent = () => {
+    if (fileExtension === "pdf") {
+      return (
+        <embed
+          src={fileUrl}
+          type="application/pdf"
+          className="w-full h-full"
+        />
+      )
+    } else if (["png", "jpg", "jpeg", "gif", "webp"].includes(fileExtension)) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-gray-100 p-4">
+          <img
+            src={fileUrl}
+            alt="Note preview"
+            className="max-w-full max-h-full object-contain"
+          />
         </div>
-      </div>
-    );
+      )
+    } else {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 p-4 text-center">
+          <FileWarning className="w-16 h-16 text-gray-400 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-800">
+            Preview not available
+          </h3>
+          <p className="text-gray-600 mt-2">
+            This file type ({fileExtension}) cannot be previewed directly.
+          </p>
+          <a
+            href={fileUrl}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Download className="w-5 h-5" />
+            Download File
+          </a>
+        </div>
+      )
+    }
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="relative bg-white w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden shadow-2xl border border-gray-100 animate-scaleIn">
-        
-        {/* Close Button */}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fadeIn">
+      <div className="relative bg-white w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 bg-gray-100 hover:bg-red-100 text-gray-700 hover:text-red-600 p-2 rounded-full transition-all shadow-sm"
@@ -42,15 +71,8 @@ export default function NoteViewer({ filePath, onClose }) {
         >
           <X className="w-5 h-5" />
         </button>
-
-        {/* Document Viewer */}
-        <iframe
-          src={`https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`}
-          className="w-full h-full border-0"
-          sandbox="allow-scripts allow-same-origin"
-          referrerPolicy="no-referrer"
-        ></iframe>
+        {renderContent()}
       </div>
     </div>
-  );
+  )
 }

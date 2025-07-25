@@ -1,200 +1,153 @@
-"use client";
+"use client"
+import { useState, useEffect, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import Header from "@/components/Header"
+import NotesGrid from "@/components/Dashboard/notes-grid"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { FileText } from "lucide-react"
 
-import { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import FilterSidebar from "@/components/Explore/filter-sidebar";
-import ResultsGrid from "@/components/Explore/results-grid";
-import SearchBar from "@/components/Explore/search-bar";
-import { useRouter } from "next/navigation";
+function MultiSelectFilter({ title, options, selected, onSelectedChange }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">{title}</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>{title}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        {options.map((option) => (
+          <DropdownMenuCheckboxItem
+            key={option}
+            checked={selected.includes(option)}
+            onCheckedChange={() => {
+              const newSelected = selected.includes(option)
+                ? selected.filter((item) => item !== option)
+                : [...selected, option]
+              onSelectedChange(newSelected)
+            }}
+          >
+            {option}
+          </DropdownMenuCheckboxItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 
-import Link from "next/link"; // don't forget if not imported!
-
-export default function Explore() {
-  const [allNotes, setAllNotes] = useState([]);
-  const [isApproved, setIsApproved] = useState(null);
-  const [filteredNotes, setFilteredNotes] = useState([]);
+export default function ExplorePage() {
+  const [loading, setLoading] = useState(true)
+  const [allNotes, setAllNotes] = useState([])
+  const [filterOptions, setFilterOptions] = useState({ courses: [], professors: [], semesters: [] })
   const [activeFilters, setActiveFilters] = useState({
-    subject: [],
+    course: [],
     semester: [],
-    fileType: [],
     professor: [],
-  });
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("date");
+  })
+  const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter()
+
   useEffect(() => {
-    const checkAccess = async () => {
+    const fetchData = async () => {
+      setLoading(true)
       try {
-        const res = await fetch("/api/check-user-role");
-        const data = await res.json();
-
-        if (!res.ok || data.is_approved !== true) {
-          router.replace("/dashboard");
-        } else {
-          setIsApproved(true);
+        const res = await fetch("/api/notes/explore")
+        if (!res.ok) {
+          router.replace("/dashboard")
+          return
         }
+        const data = await res.json()
+        setAllNotes(data.notes || [])
+        setFilterOptions(data.filterOptions || { courses: [], professors: [], semesters: [] })
       } catch (err) {
-        console.error("Access check failed", err);
-        router.replace("/dashboard");
+        console.error("Fetch error:", err)
+        router.replace("/dashboard")
+      } finally {
+        setLoading(false)
       }
-    };
-
-    checkAccess();
-  }, []);
-
-  useEffect(() => {
-    if (isApproved !== true) return;
-
-    const fetchNotes = async () => {
-      try {
-        const res = await fetch("/api/notes/explore");
-        const data = await res.json();
-
-        if (res.ok) {
-          setAllNotes(data.notes);
-        } else {
-          console.error("Failed to fetch notes:", data.error);
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-      }
-    };
-
-    fetchNotes();
-  }, [isApproved]);
-
-  // Apply filters and search
-  useEffect(() => {
-    let results = [...allNotes];
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      results = results.filter(
-        (note) =>
-          note.title.toLowerCase().includes(query) ||
-          note.subject.toLowerCase().includes(query) ||
-          note.subjectCode.toLowerCase().includes(query) ||
-          note.professor.toLowerCase().includes(query)
-      );
     }
+    fetchData()
+  }, [router])
 
-    if (activeFilters.subject.length > 0) {
-      results = results.filter((note) =>
-        activeFilters.subject.includes(note.subject)
-      );
+  const filteredNotes = useMemo(() => {
+    return allNotes
+      .filter((note) => {
+        const isCourseMatch = activeFilters.course.length === 0 || activeFilters.course.includes(note.course?.name)
+        const isSemesterMatch = activeFilters.semester.length === 0 || activeFilters.semester.includes(`${note.semester?.name} ${note.semester?.year}`)
+        const isProfessorMatch = activeFilters.professor.length === 0 || activeFilters.professor.includes(note.course?.professor?.name)
+        const isSearchMatch = !searchQuery || note.title.toLowerCase().includes(searchQuery.toLowerCase())
+        return isCourseMatch && isSemesterMatch && isProfessorMatch && isSearchMatch
+      })
+  }, [allNotes, activeFilters, searchQuery])
+
+  const renderContent = () => {
+    if (loading) {
+      return <div className="text-center py-24">Loading notes...</div>
     }
-
-    if (activeFilters.semester.length > 0) {
-      results = results.filter((note) =>
-        activeFilters.semester.includes(note.semester)
-      );
+    if (allNotes.length === 0) {
+      return (
+        <div className="text-center py-24">
+            <FileText className="mx-auto h-14 w-14 text-gray-300" />
+            <h3 className="mt-6 text-xl font-semibold text-gray-700">No Notes to Explore</h3>
+            <p className="text-gray-500 text-sm">It looks like no notes have been shared by other users yet.</p>
+        </div>
+      )
     }
-
-    if (activeFilters.fileType.length > 0) {
-      results = results.filter((note) =>
-        activeFilters.fileType.includes(note.fileType)
-      );
-    }
-
-    if (activeFilters.professor.length > 0) {
-      results = results.filter((note) =>
-        activeFilters.professor.includes(note.professor)
-      );
-    }
-
-    results.sort((a, b) => {
-      switch (sortBy) {
-        case "date":
-          return new Date(b.date) - new Date(a.date);
-        case "title":
-          return a.title.localeCompare(b.title);
-        case "downloads":
-          return b.downloads - a.downloads;
-        case "rating":
-          return b.rating - a.rating;
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredNotes(results);
-  }, [allNotes, activeFilters, searchQuery, sortBy]);
-
-  // Get unique values for filters
-  const getFilterOptions = () => {
-    const subjects = [...new Set(allNotes.map((note) => note.subject))];
-    const semesters = [...new Set(allNotes.map((note) => note.semester))];
-    const fileTypes = [...new Set(allNotes.map((note) => note.fileType))];
-    const professors = [...new Set(allNotes.map((note) => note.professor))];
-
-    return { subjects, semesters, fileTypes, professors };
-  };
-
-  const handleFilterChange = (filterType, value) => {
-    setActiveFilters((prev) => {
-      const newFilters = { ...prev };
-
-      if (newFilters[filterType].includes(value)) {
-        // Remove filter if already selected
-        newFilters[filterType] = newFilters[filterType].filter(
-          (item) => item !== value
-        );
-      } else {
-        // Add filter
-        newFilters[filterType] = [...newFilters[filterType], value];
-      }
-
-      return newFilters;
-    });
-  };
-
-  const handleSearchChange = (query) => {
-    setSearchQuery(query);
-  };
-
-  const handleSortChange = (sortOption) => {
-    setSortBy(sortOption);
-  };
-
-  const clearAllFilters = () => {
-    setActiveFilters({
-      subject: [],
-      semester: [],
-      fileType: [],
-      professor: [],
-    });
-    setSearchQuery("");
-  };
+    return (
+      <>
+        <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-white rounded-lg border">
+          <Input
+            placeholder="Search by note title..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-grow"
+          />
+          <div className="flex gap-2">
+            <MultiSelectFilter
+              title="Courses"
+              options={filterOptions.courses}
+              selected={activeFilters.course}
+              onSelectedChange={(selected) => setActiveFilters(prev => ({ ...prev, course: selected }))}
+            />
+            <MultiSelectFilter
+              title="Professors"
+              options={filterOptions.professors}
+              selected={activeFilters.professor}
+              onSelectedChange={(selected) => setActiveFilters(prev => ({ ...prev, professor: selected }))}
+            />
+            <MultiSelectFilter
+              title="Semesters"
+              options={filterOptions.semesters}
+              selected={activeFilters.semester}
+              onSelectedChange={(selected) => setActiveFilters(prev => ({ ...prev, semester: selected }))}
+            />
+          </div>
+        </div>
+        <NotesGrid notes={filteredNotes} showUploader={true} />
+      </>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Explore Study Notes</h1>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold">Explore Notes</h1>
           <p className="text-gray-600 mt-2">
-            Browse and filter through study materials shared by other students
+            Find the study materials you need from our community.
           </p>
         </div>
-
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          sortBy={sortBy}
-          onSortChange={handleSortChange}
-        />
-
-        <div className="flex flex-col md:flex-row gap-6 mt-6">
-          <FilterSidebar
-            filterOptions={getFilterOptions()}
-            activeFilters={activeFilters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={clearAllFilters}
-          />
-
-          <ResultsGrid notes={filteredNotes} />
-        </div>
+        {renderContent()}
       </main>
     </div>
-  );
+  )
 }

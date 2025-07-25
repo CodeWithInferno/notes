@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,27 +6,141 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-model Note {
-  id           String   @id @default(cuid())
-  title        String
-  subject      String
-  subjectCode  String
-  professor    String
-  semester     String
-  document     String   // The Supabase URL
-  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
-  uploadedById String
-  createdAt    DateTime @default(now())
-}
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  role      Role     @default(STUDENT) // STUDENT or TUTOR
-  notes     Note[]   // relationship
+  id                String        @id @default(cuid())
+  email             String        @unique
+  name              String?
+  role              Role          @default(STUDENT)
+  auth0Id           String        @unique
+  kudosPoints       Int         @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  notes             Note[]
+  reviews           Review[]
+  raffleEntries     RaffleEntry[]
+  UserCourses       UserCourses[]
+  createdCourses    Course[]      @relation("CreatedCourses")
+  createdProfessors Professor[]   @relation("CreatedProfessors")
+  createdSemesters  Semester[]    @relation("CreatedSemesters")
+
+  @@map("user_roles")
 }
+
+model Course {
+  id          String        @id @default(cuid())
+  name        String
+  code        String
+  professorId String?
+  createdAt   DateTime      @default(now())
+  professor   Professor?    @relation(fields: [professorId], references: [id])
+  notes       Note[]
+  UserCourses UserCourses[]
+  createdById String
+  createdBy   User          @relation("CreatedCourses", fields: [createdById], references: [id])
+}
+
+model Professor {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  courses     Course[]
+  createdById String
+  createdBy   User     @relation("CreatedProfessors", fields: [createdById], references: [id])
+}
+
+model Semester {
+  id          String @id @default(cuid())
+  name        String
+  year        Int
+  notes       Note[]
+  createdById String
+  createdBy   User   @relation("CreatedSemesters", fields: [createdById], references: [id])
+}
+
+model Note {
+  id            String        @id @default(cuid())
+  title         String
+  createdAt     DateTime      @default(now())
+  filePath      String
+  fileType      String
+  fileUrl       String
+  uploaderId    String
+  courseId      String
+  description   String?
+  updatedAt     DateTime      @updatedAt
+  semesterId    String?
+  course        Course        @relation(fields: [courseId], references: [id])
+  semester      Semester?     @relation(fields: [semesterId], references: [id])
+  uploader      User          @relation(fields: [uploaderId], references: [id])
+  reviews       Review[]
+  raffleEntries RaffleEntry[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  noteId    String
+  userId    String
+  note      Note     @relation(fields: [noteId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Raffle {
+  id            String        @id @default(cuid())
+  title         String
+  description   String?
+  startTime     DateTime      @map("start_time")
+  endTime       DateTime      @map("end_time")
+  createdAt     DateTime      @default(now())
+  raffle_prizes RafflePrize[]
+  entries       RaffleEntry[]
+
+  @@map("raffles")
+}
+
+model RafflePrize {
+  id          String  @id @default(cuid())
+  raffleId    String
+  name        String
+  description String?
+  imageUrl    String? @map("image_url")
+  quantity    Int     @default(1)
+  size        String?
+  color       String?
+  metadata    Json?
+  raffles     Raffle  @relation(fields: [raffleId], references: [id])
+
+  @@map("raffle_prizes")
+}
+
+model RaffleEntry {
+  id        String   @id @default(cuid())
+  raffle    Raffle   @relation(fields: [raffleId], references: [id])
+  raffleId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  note      Note     @relation(fields: [noteId], references: [id])
+  noteId    String
+  isWinner  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model UserCourses {
+  A          String
+  B          String
+  Course     Course @relation(fields: [A], references: [id])
+  user_roles User   @relation(fields: [B], references: [id])
+
+  @@id([A, B])
+  @@map("_UserCourses")
+}
+
 enum Role {
   STUDENT
+  PROFESSOR
+  ADMIN
   TUTOR
 }
