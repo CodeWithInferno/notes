@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
-  },
+  },,
   "dependencies": {
     "@auth0/nextjs-auth0": "3.6.0",
     "@prisma/client": "^6.5.0",
