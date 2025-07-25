@@ -11,7 +11,7 @@
     "vercel-build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
-  },,
+  },
   "dependencies": {
     "@auth0/nextjs-auth0": "3.6.0",
     "@prisma/client": "^6.5.0",
