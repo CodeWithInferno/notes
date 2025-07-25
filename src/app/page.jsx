@@ -1,98 +1,70 @@
 "use client"
-import { useEffect } from "react"
 import Header from "../components/Header"
-import { GallerySection } from "../components/gallery-section"
 import { FeaturesSection } from "../components/features-section"
-import { ContactSection } from "../components/contact-section"
-import { Navbar } from "../components/navbar"
 import { Footer } from "../components/footer"
-import { RecentNotesSection } from "../components/recent-notes-section"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
+import { motion } from "framer-motion"
+import { StemCenterSection } from "../components/stem-center-section"
+import { HowItWorksSection } from "../components/how-it-works-section"
+import { TestimonialsSection } from "../components/testimonials-section"
 
 export default function Page() {
-  // Add scroll reveal effect
-  useEffect(() => {
-    const sections = document.querySelectorAll("section")
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-fadeIn")
-          }
-        })
-      },
-      { threshold: 0.1 },
-    )
-
-    sections.forEach((section) => {
-      observer.observe(section)
-    })
-
-    return () => {
-      sections.forEach((section) => {
-        observer.unobserve(section)
-      })
-    }
-  }, [])
-
   return (
-    <div className="min-h-screen">
-      {/* Background pattern with improved opacity */}
-      <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-70"></div>
-
-      {/* Header */}
+    <div className="min-h-screen bg-background text-foreground relative">
+      <div className="aurora-background"></div>
       <Header />
 
-      {/* Navbar */}
-      <Navbar />
+      <main className="relative z-10">
+        {/* Hero Section */}
+        <section className="h-screen flex items-center justify-center">
+          <div className="container mx-auto px-4 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            >
+              <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter">
+                Where Knowledge Connects
+              </h1>
+              <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
+                A project by the Gannon University STEM Center. Share your insights, discover new perspectives, and elevate your learning experience.
+              </p>
+              <div className="mt-10">
+                <Link href="/api/auth/login" passHref>
+                  <Button size="lg" className="bg-primary text-primary-foreground font-bold text-lg px-8 py-6 rounded-full transform hover:scale-105 transition-transform shadow-[0_0_30px_rgba(168,21,21,0.6)]">
+                    Join the Collective <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </section>
 
-      {/* Hero Section - Enhanced with better visuals */}
-      <section
-        id="home"
-        className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#8e0e00] to-[#4a0000] text-center px-5 relative z-10 overflow-hidden"
-      >
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-[#f7d354]/20 animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-[#f7d354]/10 animate-pulse delay-1000"></div>
+        <StemCenterSection />
+        <HowItWorksSection />
+        <FeaturesSection />
+        <TestimonialsSection />
 
-        <div className="max-w-[700px] border border-[#400] p-[60px_40px] rounded-xl md:p-[60px_40px] p-[40px_20px] backdrop-blur-sm bg-black/20 shadow-xl transform transition-all duration-500 hover:scale-[1.02]">
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-white mb-5">
-            <span className="block mb-2 text-[#f7d354]">GUNotes</span>
-            <span>Ready to grab</span>
-            <br />
-            <span>
-              your <u className="underline decoration-[#f7d354] underline-offset-[6px]">notes</u>
-            </span>
-          </h1>
-          <p className="text-base text-gray-300 mb-8 max-w-md mx-auto">
-            GUNote provides all subject notes that you are looking for. We have arranged all notes according to your
-            respective institutes or colleges.
-          </p>
-          <a
-            href="/get-started"
-            className="inline-block bg-gradient-to-r from-[#f7d354] to-[#f7971e] text-black py-4 px-7 font-bold rounded-full shadow-lg hover:from-[#ffe48d] hover:to-[#f7971e] transition-all hover:shadow-xl hover:-translate-y-1"
-          >
-            ✨ Start taking notes
-          </a>
-        </div>
-      </section>
+        {/* Final CTA Section */}
+        <section className="py-32">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold">Ready to Begin?</h2>
+            <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
+              Create an account in seconds and unlock a universe of shared knowledge.
+            </p>
+            <div className="mt-8">
+              <Link href="/api/auth/login" passHref>
+                <Button size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground font-bold text-lg px-8 py-6 rounded-full transform hover:scale-105 transition-transform shadow-[0_0_30px_rgba(234,179,8,0.4)]">
+                  Sign Up for Free
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
 
-      {/* Feature Section */}
-      <FeaturesSection />
-
-      {/* Recent Notes Section */}
-      <RecentNotesSection />
-
-      {/* Gallery Section */}
-      <GallerySection />
-
-      {/* Testimonials Section */}
-
-
-      {/* Contact Section */}
-      <ContactSection />
-
-      {/* Footer */}
       <Footer />
     </div>
   )

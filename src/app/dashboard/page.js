@@ -1,7 +1,4 @@
 'use client'
-
-
-
 import React, { useState, useEffect, useCallback } from "react"
 import Header from "../../components/Header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
@@ -11,12 +8,28 @@ import EditNoteModal from "../../components/Dashboard/EditNoteModal"
 import RaffleHighlightCard from "../../components/Dashboard/RaffleHighlightCard"
 import Link from "next/link"
 import { Award } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+
+const NotesGridSkeleton = () => (
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4">
+        {[...Array(4)].map((_, i) => (
+            <div key={i} className="space-y-3">
+                <Skeleton className="h-32 w-full rounded-xl" />
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-4/5" />
+                    <Skeleton className="h-4 w-3/5" />
+                </div>
+            </div>
+        ))}
+    </div>
+)
 
 export default function Dashboard() {
   const [notes, setNotes] = useState([])
   const [user, setUser] = useState(null)
   const [editingNote, setEditingNote] = useState(null)
   const [academics, setAcademics] = useState({ courses: [], semesters: [] })
+  const [loading, setLoading] = useState(true)
 
   const fetchAcademics = useCallback(async () => {
     const res = await fetch("/api/academics")
@@ -44,13 +57,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     const initializeUserAndFetchData = async () => {
+      setLoading(true)
       const userRes = await fetch('/api/init-user');
       if (userRes.ok) {
         const { user } = await userRes.json();
         setUser(user);
       }
-      await fetchNotes();
-      await fetchAcademics();
+      await Promise.all([fetchNotes(), fetchAcademics()])
+      setLoading(false)
     }
     initializeUserAndFetchData()
   }, [fetchNotes, fetchAcademics])
@@ -95,12 +109,16 @@ export default function Dashboard() {
           </TabsList>
 
           <TabsContent value="my-notes">
-            <NotesGrid
-              notes={notes}
-              currentUserId={user?.id}
-              onEdit={setEditingNote}
-              onDelete={handleDeleteNote}
-            />
+            {loading ? (
+                <NotesGridSkeleton />
+            ) : (
+                <NotesGrid
+                  notes={notes}
+                  currentUserId={user?.id}
+                  onEdit={setEditingNote}
+                  onDelete={handleDeleteNote}
+                />
+            )}
           </TabsContent>
 
           <TabsContent value="upload">
@@ -110,7 +128,7 @@ export default function Dashboard() {
               <div className="bg-green-50 border border-green-100 rounded-lg p-6">
                 <div className="flex items-center gap-3">
                   <div className="bg-green-100 p-2 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                       <polyline points="14 2 14 8 20 8"></polyline>
                       <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -149,4 +167,3 @@ export default function Dashboard() {
     </div>
   )
 }
-
