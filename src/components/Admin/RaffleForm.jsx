@@ -109,7 +109,7 @@ export default function RaffleForm({ raffle, onSubmit, onCancel }) {
 
           <h3 className="font-bold">Prizes</h3>
           {prizes.map((prize, index) => (
-            <div key={index} className="p-4 border rounded-lg space-y-2">
+            <div key={index} className="p-4 border-border rounded-lg space-y-2">
                 <div className="flex items-center gap-2">
                     <Input
                         placeholder="Prize Name"

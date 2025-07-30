@@ -95,15 +95,15 @@ export default function ExplorePage() {
     if (allNotes.length === 0) {
       return (
         <div className="text-center py-24">
-            <FileText className="mx-auto h-14 w-14 text-gray-300" />
-            <h3 className="mt-6 text-xl font-semibold text-gray-700">No Notes to Explore</h3>
-            <p className="text-gray-500 text-sm">It looks like no notes have been shared by other users yet.</p>
+            <FileText className="mx-auto h-14 w-14 text-muted-foreground" />
+            <h3 className="mt-6 text-xl font-semibold">No Notes to Explore</h3>
+            <p className="text-muted-foreground text-sm">It looks like no notes have been shared by other users yet.</p>
         </div>
       )
     }
     return (
       <>
-        <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-white rounded-lg border">
+        <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-card rounded-lg border">
           <Input
             placeholder="Search by note title..."
             value={searchQuery}
@@ -137,12 +137,12 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold">Explore Notes</h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-muted-foreground mt-2">
             Find the study materials you need from our community.
           </p>
         </div>

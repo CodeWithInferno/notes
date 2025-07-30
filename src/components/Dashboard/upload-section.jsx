@@ -194,10 +194,10 @@ export default function UploadSection({ onNoteUploaded }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Card className="p-6 flex flex-col items-center justify-center h-64 border-dashed cursor-pointer hover:bg-gray-50 transition-colors">
-          <Plus className="h-12 w-12 text-gray-300" />
-          <p className="mt-4 text-gray-500 font-medium">Upload New Notes</p>
-          <p className="text-xs text-gray-400 mt-1">
+        <Card className="p-6 flex flex-col items-center justify-center h-64 border-dashed cursor-pointer hover:bg-muted/50 transition-colors">
+          <Plus className="h-12 w-12 text-muted-foreground" />
+          <p className="mt-4 text-muted-foreground font-medium">Upload New Notes</p>
+          <p className="text-xs text-muted-foreground/80 mt-1">
             Earn a raffle entry for each upload!
           </p>
         </Card>
@@ -279,15 +279,15 @@ export default function UploadSection({ onNoteUploaded }) {
             <div className="mt-1 flex items-center justify-center w-full">
               <label
                 htmlFor="file"
-                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted"
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                  <p className="mb-2 text-sm text-gray-500">
+                  <Upload className="w-8 h-8 mb-3 text-muted-foreground" />
+                  <p className="mb-2 text-sm text-muted-foreground">
                     <span className="font-semibold">Click to upload</span> or
                     drag and drop
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     PDF, DOCX, PPT, etc.
                   </p>
                 </div>

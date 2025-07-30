@@ -15,7 +15,7 @@ const StarRating = ({ rating, setRating, isInteractive = true }) => {
         <Star
           key={star}
           className={`${isInteractive ? 'cursor-pointer' : ''} ${
-            rating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+            rating >= star ? "text-secondary fill-secondary" : "text-muted-foreground/50"
           }`}
           onClick={() => isInteractive && setRating(star)}
         />
@@ -88,7 +88,7 @@ export default function ViewNotePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -97,15 +97,15 @@ export default function ViewNotePage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold">{note.title}</h1>
-            <p className="text-gray-600 mt-2">{note.description}</p>
+            <p className="text-muted-foreground mt-2">{note.description}</p>
             <div className="flex items-center gap-2 mt-2">
                 <StarRating rating={note.averageRating} isInteractive={false} />
-                <span className="text-gray-600">({note._count.reviews} reviews)</span>
+                <span className="text-muted-foreground">({note._count.reviews} reviews)</span>
             </div>
             
             <div className="mt-8">
                 <h2 className="text-2xl font-bold mb-4">Leave a Review</h2>
-                <form onSubmit={handleReviewSubmit} className="space-y-4 p-4 border rounded-lg bg-white">
+                <form onSubmit={handleReviewSubmit} className="space-y-4 p-4 border-border rounded-lg bg-card">
                     <div>
                         <label className="block font-medium mb-2">Your Rating</label>
                         <StarRating rating={rating} setRating={setRating} />
@@ -126,12 +126,12 @@ export default function ViewNotePage() {
                 <h2 className="text-2xl font-bold mb-4">Reviews</h2>
                 <div className="space-y-4">
                     {reviews.map(review => (
-                        <div key={review.id} className="p-4 border rounded-lg bg-white">
+                        <div key={review.id} className="p-4 border-border rounded-lg bg-card">
                             <div className="flex items-center justify-between">
                                 <h3 className="font-semibold">{review.user.name}</h3>
                                 <StarRating rating={review.rating} isInteractive={false} />
                             </div>
-                            <p className="text-gray-600 mt-2">{review.comment}</p>
+                            <p className="text-muted-foreground mt-2">{review.comment}</p>
                         </div>
                     ))}
                 </div>

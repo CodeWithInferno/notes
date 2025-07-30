@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { ThemeToggler } from "./ThemeToggler"
 
 export default function Header() {
   const { user, error, isLoading } = useUser()
@@ -23,6 +24,7 @@ export default function Header() {
           GU<span className="text-primary">Notes</span>
         </Link>
         <nav className="flex items-center gap-4">
+          <ThemeToggler />
           {isLoading && (
             <div className="flex items-center gap-4">
               <Skeleton className="h-8 w-24 rounded-md" />

@@ -9,20 +9,20 @@ export default function NotesGrid({ notes, showUploader = false, currentUserId, 
   const getFileIcon = (fileType) => {
     switch (fileType) {
       case "pdf":
-        return <FileText className="text-red-500" />
+        return <FileText className="text-destructive" />
       case "docx":
-        return <FileText className="text-blue-500" />
+        return <FileText className="text-primary" />
       default:
-        return <FileText />
+        return <FileText className="text-muted-foreground" />
     }
   }
 
   if (!notes || notes.length === 0) {
     return (
       <div className="text-center py-24">
-        <FileText className="mx-auto h-14 w-14 text-gray-300" />
-        <h3 className="mt-6 text-xl font-semibold text-gray-700">No Results Found</h3>
-        <p className="text-gray-500 text-sm">Try adjusting your search or filter criteria.</p>
+        <FileText className="mx-auto h-14 w-14 text-muted-foreground" />
+        <h3 className="mt-6 text-xl font-semibold">No Results Found</h3>
+        <p className="text-muted-foreground text-sm">Try adjusting your search or filter criteria.</p>
       </div>
     )
   }
@@ -33,21 +33,21 @@ export default function NotesGrid({ notes, showUploader = false, currentUserId, 
         <Card
           key={note.id}
           className={cn(
-            "p-5 border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-all group",
-            "hover:border-primary/50 bg-white relative flex flex-col justify-between",
+            "p-5 border-border rounded-2xl shadow-sm hover:shadow-md transition-all group",
+            "hover:border-primary/50 bg-card relative flex flex-col justify-between",
           )}
         >
           <div>
             <div className="flex items-start gap-4">
-              <div className="p-2 rounded-full bg-gray-100 group-hover:bg-primary/10 transition">
+              <div className="p-2 rounded-full bg-secondary/10 group-hover:bg-primary/10 transition">
                 {getFileIcon(note.fileType)}
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold truncate text-gray-800 group-hover:text-primary transition">
+                <h3 className="text-lg font-semibold truncate text-foreground group-hover:text-primary transition">
                   {note.title}
                 </h3>
                 {note.course && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     {note.course.name}{" "}
                     {note.course.code && (
                       <span className="text-xs">({note.course.code})</span>
@@ -64,11 +64,11 @@ export default function NotesGrid({ notes, showUploader = false, currentUserId, 
                     {note.semester.name} {note.semester.year}
                   </p>
                 )}
-                <p className="text-xs text-gray-400 mt-1 italic">
+                <p className="text-xs text-muted-foreground/80 mt-1 italic">
                   Uploaded: {new Date(note.createdAt).toLocaleDateString()}
                 </p>
                 {showUploader && note.uploader && (
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-muted-foreground/80 mt-1">
                         By: {note.uploader.name}
                     </p>
                 )}
@@ -104,7 +104,7 @@ export default function NotesGrid({ notes, showUploader = false, currentUserId, 
                     </Button>
                 </>
             )}
-            <div className="flex items-center gap-1 text-yellow-500">
+            <div className="flex items-center gap-1 text-secondary">
                 <Star className="w-4 h-4 fill-current" />
                 <span className="text-sm font-semibold">{note.averageRating.toFixed(1)}</span>
             </div>

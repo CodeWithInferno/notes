@@ -61,13 +61,13 @@ export default function EditNoteModal({ note, academics, isOpen, onClose, onNote
           {/* Simplified selects for now. We can replace these with the Combobox later. */}
           <div>
             <Label htmlFor="course">Course</Label>
-            <select id="course" value={courseId} onChange={(e) => setCourseId(e.target.value)} className="w-full p-2 border rounded">
+            <select id="course" value={courseId} onChange={(e) => setCourseId(e.target.value)} className="w-full p-2 border-border rounded bg-background">
               {academics.courses.map(course => <option key={course.id} value={course.id}>{course.name}</option>)}
             </select>
           </div>
            <div>
             <Label htmlFor="semester">Semester</Label>
-            <select id="semester" value={semesterId} onChange={(e) => setSemesterId(e.target.value)} className="w-full p-2 border rounded">
+            <select id="semester" value={semesterId} onChange={(e) => setSemesterId(e.target.value)} className="w-full p-2 border-border rounded bg-background">
               {academics.semesters.map(sem => <option key={sem.id} value={sem.id}>{sem.name} {sem.year}</option>)}
             </select>
           </div>

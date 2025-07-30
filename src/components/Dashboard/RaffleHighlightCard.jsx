@@ -36,12 +36,12 @@ export default function RaffleHighlightCard() {
 
   if (!activeRaffle) {
     return (
-       <Card className="p-6 bg-blue-50 border-blue-100">
+       <Card className="p-6 bg-secondary/10 border-border">
         <div className="flex items-center gap-3">
-            <Award className="h-10 w-10 text-blue-500" />
+            <Award className="h-10 w-10 text-secondary" />
             <div>
                 <h3 className="font-medium">No Active Raffles</h3>
-                <p className="text-sm text-gray-600">Check back later for new events!</p>
+                <p className="text-sm text-muted-foreground">Check back later for new events!</p>
             </div>
         </div>
          <div className="w-full mt-4">
@@ -54,16 +54,16 @@ export default function RaffleHighlightCard() {
   }
 
   return (
-    <Card className="p-6 bg-blue-50 border-blue-100">
+    <Card className="p-6 bg-secondary/10 border-border">
        <div className="flex items-center gap-3">
-        <Award className="h-10 w-10 text-blue-500" />
+        <Award className="h-10 w-10 text-secondary" />
         <div>
             <h3 className="font-medium">{activeRaffle.title}</h3>
-            <p className="text-sm text-gray-600">A new raffle is underway!</p>
+            <p className="text-sm text-muted-foreground">A new raffle is underway!</p>
         </div>
       </div>
       <div className="mt-4">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Prizes include: {activeRaffle.raffle_prizes.slice(0, 2).map(p => p.name).join(', ')}...
         </p>
       </div>
