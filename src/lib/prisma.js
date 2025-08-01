@@ -4,8 +4,18 @@ import { PrismaClient } from '@prisma/client'
 // in a serverless environment, which would exhaust the database connection pool.
 
 const prismaClientSingleton = () => {
-  return new PrismaClient()
-}
+  const databaseUrl = new URL(process.env.DATABASE_URL);
+  databaseUrl.searchParams.set("pgbouncer", "true");
+  databaseUrl.searchParams.set("connect_timeout", "15");
+
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: databaseUrl.toString(),
+      },
+    },
+  });
+};
 
 const globalForPrisma = globalThis
 
